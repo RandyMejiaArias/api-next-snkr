@@ -24,7 +24,29 @@ const userSchema = new Schema(
     emailVerified: {
       type: Boolean,
       default: false
-    }
+    },
+    phone: {
+      type: String
+    },
+    preferredSize: {
+      type: String
+    },
+    collectibles: [
+      {
+        size: {
+          type: String,
+          required: true
+        },
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: 'Product',
+          required: true
+        },
+        score: {
+          type: Number
+        }
+      }
+    ]
   },
   {
     timestamps: true,
