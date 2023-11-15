@@ -42,7 +42,7 @@ export const signUp = async (req, res) => {
     await sendMail('Accounts', config.MAIL_USER, email, 'Confirm your account', template);
 
     return res.status(201).json({
-      message: 'User registered succesfully',
+      message: 'User registered successfully',
       data: token
     });
   } catch (error) {
@@ -82,14 +82,12 @@ export const signIn = async (req, res) => {
     );
 
     return res.status(200).json({
-      message: 'User authenticaded succesfully!',
+      message: 'User authenticaded successfully!',
       data: {
         token
       }
     });
   } catch (error) {
-    return res.status(500).json({
-      message: error
-    });
+    return res.status(500).json(error);
   }
 };

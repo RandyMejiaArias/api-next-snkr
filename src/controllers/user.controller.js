@@ -45,7 +45,7 @@ export const createUser = async (req, res) => {
     await sendMail('Accounts', config.MAIL_USER, email, 'Confirm your account', template);
 
     return res.status(201).json({
-      message: 'User saved succesfully!',
+      message: 'User saved successfully!',
       data: savedUser
     });
   } catch (error) {
@@ -66,7 +66,7 @@ export const confirmUser = async (req, res) => {
     foundUser.emailVerified = true;
     foundUser.save();
     return res.status(200).json({
-      message: 'Your account has been verified succesfully.'
+      message: 'Your account has been verified successfully.'
     });
   } catch (error) {
     return res.status(500).json(error);
@@ -119,7 +119,7 @@ export const updateUserByIdByAdmin = async (req, res) => {
       req.body
     );
     return res.status(201).json({
-      message: 'User has been updated succesfully.',
+      message: 'User has been updated successfully.',
       data: updatedUser
     });
   } catch (error) {
@@ -134,7 +134,7 @@ export const updateUserById = async (req, res) => {
       req.body
     );
     return res.status(201).json({
-      message: 'User has been updated succesfully.',
+      message: 'User has been updated successfully.',
       data: updatedUser
     });
   } catch (error) {
@@ -146,7 +146,7 @@ export const deleteUserById = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.userId);
     return res.status(200).json({
-      message: 'User has been deleted succesfully.'
+      message: 'User has been deleted successfully.'
     });
   } catch (error) {
     return res.status(500).json(error);
@@ -159,7 +159,7 @@ export const deleteUserByIdByAdmin = async (req, res) => {
 
     await User.findByIdAndDelete(userId);
     return res.status(200).json({
-      message: 'User has been deleted succesfully.'
+      message: 'User has been deleted successfully.'
     });
   } catch (error) {
     return res.status(500).json(error);
@@ -184,14 +184,12 @@ export const changePassword = async (req, res) => {
         { password: newPasswordEncrypted }
       );
       return res.status(201).json({
-        message: 'Passwod has been updated succesfully.',
+        message: 'Passwod has been updated successfully.',
         data: updatedUser
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      message: error
-    });
+    return res.status(500).json(error);
   }
 };
 
@@ -224,9 +222,7 @@ export const forgotPassword = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      message: error
-    });
+    return res.status(500).json(error);
   }
 };
 
@@ -262,12 +258,10 @@ export const resetPassword = async (req, res) => {
     await requestFound.save();
 
     return res.status(201).json({
-      message: 'Password updated succesfully.',
+      message: 'Password updated successfully.',
       data: updatedUser
     });
   } catch (error) {
-    return res.status(500).json({
-      message: error
-    });
+    return res.status(500).json(error);
   }
 };
