@@ -9,11 +9,11 @@ const productSchema = new Schema(
       type: String,
       required: true
     },
-    model: {
+    brand: {
       type: String,
       required: true
     },
-    brand: {
+    model: {
       type: String,
       required: true
     },
@@ -22,39 +22,41 @@ const productSchema = new Schema(
       required: true
     },
     mainImage: {
-      public_id: {
-        type: String,
-        required: true
-      },
-      secure_url: {
-        type: String,
-        required: true
-      }
+      type: String,
+      required: true
     },
     images: [
       {
-        public_id: {
-          type: String
-        },
-        secure_url: {
-          type: String
-        }
+        type: String
       }
     ],
     releaseDate: {
       type: Date
     },
-    isCollaboration: {
-      type: Boolean 
-    },
     retailPrice: {
       type: Number
     },
-    stockXUrl: {
-      type: String
+    stockX: {
+      id: {
+        type: String
+      },
+      baseUrl: {
+        type: String
+      },
+      endpoint: {
+        type: String
+      }
     },
-    goatUrl: {
-      type: String
+    goat: {
+      id: {
+        type: String
+      },
+      baseUrl: {
+        type: String
+      },
+      endpoint: {
+        type: String
+      }
     }
   },
   {
