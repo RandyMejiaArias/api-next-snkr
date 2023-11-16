@@ -27,6 +27,11 @@ router.get(
   usersCtrl.getUserById
 );
 
+router.get(
+  '/confirm/:token',
+  usersCtrl.confirmUser
+);
+
 router.post(
   '/',
   [
