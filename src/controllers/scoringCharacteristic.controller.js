@@ -4,11 +4,10 @@ export const createScoringCharacteristic = async (req, res) => {
   try {
     const { name } = req.body;
 
-    const scoringCharacteristicFound = await ScoringCharacteristic.find({name});
+    const scoringCharacteristicFound = await ScoringCharacteristic.findOne({name});
 
     if(scoringCharacteristicFound)
-      return res.status(400).json({
-    message: 'Scoring characteristic already exists.' });
+      return res.status(400).json({ message: 'Scoring characteristic already exists.' });
 
     const scoringCharacteristic = new ScoringCharacteristic({ name });
 
