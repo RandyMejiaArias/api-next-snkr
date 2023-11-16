@@ -11,6 +11,9 @@ import { createRol, createAdmin } from './libs/initialSetup.js';
 // Importing Routes
 import userRoutes from './routes/user.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import scoringCharRoutes from './routes/scoringCharacteristic.routes.js';
+import prefScoresRoutes from './routes/preferredScoring.routes.js';
+import productRoutes from './routes/product.routes.js';
 
 // Initialization
 const app = express();
@@ -42,6 +45,9 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/preferredScoring', prefScoresRoutes);
+app.use('/api/scoringCharacteristics', scoringCharRoutes);
+app.use('/api/products', productRoutes);
 
 export {
   app
