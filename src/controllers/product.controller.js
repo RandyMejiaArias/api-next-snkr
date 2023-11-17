@@ -34,7 +34,7 @@ export const getProducts = async (req, res) => {
     const { results: goatData } = await searchOnGoat(queryText.replaceAll(' ', '%20'));
 
     const results = [];
-    goatData.forEach(async goatResult => {
+    for (const goatResult of goatData) {
       const { data: { id: idGoat, sku, slug, image_url, product_type, release_date, retail_price_cents } } = goatResult;
       const { secondaryTitle, brand, urlKey, model, styleId } = await searchOnStockxWithSKU(sku.replaceAll(' ', '-'));
       if(sku === styleId) {
@@ -59,10 +59,17 @@ export const getProducts = async (req, res) => {
           }
         });
         results.push(newProduct);
-      }
-    });
-    
-    return res.status(200).json(goatResults)
+      } 
+    }
+
+    const savedData = [];
+
+    for (const product of results) {
+      const savedProduct = await product.save();
+      savedData.push(savedProduct);
+    }
+
+    return res.status(200).json(savedData)
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
@@ -113,9 +120,9 @@ const searchOnStockxWithSKU = async (sku) => {
     const { data: { browse: { results: { edges }}} } = data;
 
     const products = [];
-    edges.forEach(async element => {
+    for (const element of edges) {
       const { node: { urlKey }} = element;
-
+  
       const { data } = await stockXApi.post(
         '',
         {
@@ -125,18 +132,17 @@ const searchOnStockxWithSKU = async (sku) => {
             'currencyCode': 'USD',
             'countryCode': 'US',
             'marketName': 'US',
-            'skipBadges': false,
-            'skipSeo': false,
+            'skipBadges': true,
+            'skipSeo': true,
             'skipMerchandising': true
           },
           'operationName': 'GetProduct'
         }
       )
-
+  
       const { data: { product } } = data;
-      products.push(product);
-    });
-
+      products.push(product); 
+    }
     return products.find(e => e.style === sku);
   } catch (error) {
     console.log(error);
