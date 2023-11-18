@@ -75,8 +75,15 @@ export const confirmUser = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    return res.status(200).json(users);
+    const [ users, total ] = await Promise.all([
+      User.find().populate('role'),
+      User.countDocuments()
+    ]);
+
+    return res.status(200).json({
+      data: users,
+      total
+    });
   } catch (error) {
     return res.status(500).json(error);
   }
