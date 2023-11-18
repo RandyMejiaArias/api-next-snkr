@@ -10,4 +10,9 @@ router.get(
   productCtrl.getProducts
 );
 
+router.get(
+  '/search',
+  productCtrl.searchProducts
+);
+
 export default router;

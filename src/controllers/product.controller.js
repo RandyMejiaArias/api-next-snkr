@@ -5,6 +5,28 @@ import stockXApi from '../utils/stockXApi.js';
 
 export const getProducts = async (req, res) => {
   try {
+    const { limit = 0, page = 0 } = req.query;
+
+    const [ total, data ] = await Promise.all([
+      Product.countDocuments(),
+      Product.find()
+        .skip(Number(limit * (page - 1) ))
+        .limit(Number(limit))
+        .sort({releaseDate: 'desc'})
+    ]);
+
+    return res.status(200).json({
+      total,
+      data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+}
+
+export const searchProducts = async (req, res) => {
+  try {
     const { limit = 0, page = 0, queryText } = req.query;
     
     const query = {
@@ -21,7 +43,7 @@ export const getProducts = async (req, res) => {
       Product.find(query)
         .skip(Number(limit * (page - 1) ))
         .limit(Number(limit))
-        .sort({colorway: 'desc'})
+        .sort({releaseDate: 'desc'})
     ]);
 
     if(total > 0)
