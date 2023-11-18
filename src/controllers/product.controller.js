@@ -36,37 +36,43 @@ export const getProducts = async (req, res) => {
     const results = [];
     for (const goatResult of goatData) {
       const { data: { id: idGoat, sku, slug, image_url, product_type, release_date, retail_price_cents } } = goatResult;
-      const { secondaryTitle, brand, urlKey, model, styleId } = await searchOnStockxWithSKU(sku.replaceAll(' ', '-'));
-      if(sku === styleId) {
-        const newProduct = new Product({
-          type: product_type,
-          sku,
-          brand,
-          model,
-          colorway: secondaryTitle,
-          mainImage: image_url,
-          releaseDate: release_date,
-          retailPrice: Number(retail_price_cents/100),
-          stockX: {
-            id: urlKey,
-            endpoint: urlKey,
-            baseUrl: 'https://stockx.com/'
-          },
-          goat: {
-            id: idGoat,
-            endpoint: slug,
-            baseUrl: 'https://www.goat.com/sneakers/'
-          }
-        });
-        results.push(newProduct);
-      } 
+      const releaseDate = new Date(`${release_date?.toString().substring(0, 4)}-${release_date?.toString().substring(4, 6)}-${release_date?.toString().substring(6, 8)}`);
+      const stockXData = await searchOnStockxWithSKU(sku.replaceAll(' ', '-'));
+      if(stockXData) {
+        const { secondaryTitle, brand, urlKey, model, styleId } = stockXData;
+        if(sku.replaceAll(' ', '-') === styleId) {
+          const newProduct = new Product({
+            type: product_type,
+            sku: styleId,
+            brand,
+            model,
+            colorway: secondaryTitle,
+            mainImage: image_url,
+            releaseDate: !isNaN(releaseDate.getTime()) ? releaseDate : release_date,
+            retailPrice: Number(retail_price_cents/100),
+            stockX: {
+              id: urlKey,
+              endpoint: urlKey,
+              baseUrl: 'https://stockx.com/'
+            },
+            goat: {
+              id: idGoat,
+              endpoint: slug,
+              baseUrl: 'https://www.goat.com/sneakers/'
+            }
+          });
+          results.push(newProduct);
+        } 
+      }
     }
-
     const savedData = [];
-
+    
     for (const product of results) {
-      const savedProduct = await product.save();
-      savedData.push(savedProduct);
+      const productFound = await Product.findOne({sku: product.sku})
+      if(!productFound) {
+        const savedProduct = await product.save();
+        savedData.push(savedProduct);
+      }
     }
 
     return res.status(200).json(savedData)
@@ -139,11 +145,13 @@ const searchOnStockxWithSKU = async (sku) => {
           'operationName': 'GetProduct'
         }
       )
-  
+
       const { data: { product } } = data;
       products.push(product); 
     }
-    return products.find(e => e.style === sku);
+
+    const productToReturn = products.find(e => e.styleId === sku);
+    return productToReturn ? productToReturn : null;
   } catch (error) {
     console.log(error);
     return error;
