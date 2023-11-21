@@ -1,4 +1,3 @@
-import axios from 'axios';
 import Product from '../models/Product.js';
 import goatApi from '../utils/goatApi.js';
 import stockXApi from '../utils/stockXApi.js';
@@ -58,33 +57,36 @@ export const searchProducts = async (req, res) => {
     const results = [];
     for (const goatResult of goatData) {
       const { data: { id: idGoat, sku, slug, image_url, product_type, release_date, retail_price_cents } } = goatResult;
-      const releaseDate = new Date(`${release_date?.toString().substring(0, 4)}-${release_date?.toString().substring(4, 6)}-${release_date?.toString().substring(6, 8)}`);
-      const stockXData = await searchOnStockxWithSKU(sku.replaceAll(' ', '-'));
-      if(stockXData) {
-        const { secondaryTitle, brand, urlKey, model, styleId } = stockXData;
-        if(sku.replaceAll(' ', '-') === styleId) {
-          const newProduct = new Product({
-            type: product_type,
-            sku: styleId,
-            brand,
-            model,
-            colorway: secondaryTitle,
-            mainImage: image_url,
-            releaseDate: !isNaN(releaseDate.getTime()) ? releaseDate : release_date,
-            retailPrice: Number(retail_price_cents/100),
-            stockX: {
-              id: urlKey,
-              endpoint: urlKey,
-              baseUrl: 'https://stockx.com/'
-            },
-            goat: {
-              id: idGoat,
-              endpoint: slug,
-              baseUrl: 'https://www.goat.com/sneakers/'
-            }
-          });
-          results.push(newProduct);
-        } 
+      const productFound = await Product.findOne({sku: sku.replaceAll(' ', '-')});
+      if(!productFound) {
+        const releaseDate = new Date(`${release_date?.toString().substring(0, 4)}-${release_date?.toString().substring(4, 6)}-${release_date?.toString().substring(6, 8)}`);
+        const stockXData = await searchOnStockxWithSKU(sku.replaceAll(' ', '-'));
+        if(stockXData) {
+          const { secondaryTitle, brand, urlKey, model, styleId } = stockXData;
+          if(sku.replaceAll(' ', '-') === styleId) {
+            const newProduct = new Product({
+              type: product_type,
+              sku: styleId,
+              brand,
+              model,
+              colorway: secondaryTitle,
+              mainImage: image_url,
+              releaseDate: !isNaN(releaseDate.getTime()) ? releaseDate : release_date,
+              retailPrice: Number(retail_price_cents/100),
+              stockX: {
+                id: urlKey,
+                endpoint: urlKey,
+                baseUrl: 'https://stockx.com/'
+              },
+              goat: {
+                id: idGoat,
+                endpoint: slug,
+                baseUrl: 'https://www.goat.com/sneakers/'
+              }
+            });
+            results.push(newProduct);
+          } 
+        }
       }
     }
     const savedData = [];
