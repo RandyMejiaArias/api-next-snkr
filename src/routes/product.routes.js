@@ -15,4 +15,9 @@ router.get(
   productCtrl.searchProducts
 );
 
+router.get(
+  '/:productId',
+  productCtrl.getProductById
+);
+
 export default router;
