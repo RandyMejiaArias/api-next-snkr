@@ -36,6 +36,9 @@ const productSchema = new Schema(
     retailPrice: {
       type: Number
     },
+    lastRevisionDate: {
+      type: Date
+    },
     stockX: {
       id: {
         type: String

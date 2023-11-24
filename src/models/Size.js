@@ -6,9 +6,6 @@ const sizeSchema = new Schema(
       type: String,
       required: true
     },
-    lastRevisionDate: {
-      type: Date
-    },
     stockXPrice: {
       type: Number
     },
