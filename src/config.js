@@ -5,6 +5,7 @@ export default {
   PORT: process.env.PORT || 4000,
   API_GATEWAY_URL: process.env.API_GATEWAY_URL,
   SECRET: process.env.SECRET_KEY,
+  SCRAPFLY_KEY: process.env.SCRAPFLY_KEY,
   DB_ADMIN_USER: process.env.DB_ADMIN_USER,
   DB_ADMIN_EMAIL: process.env.DB_ADMIN_EMAIL,
   DB_ADMIN_PASS: process.env.DB_ADMIN_PASS,
