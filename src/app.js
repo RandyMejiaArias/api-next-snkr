@@ -14,6 +14,7 @@ import authRoutes from './routes/auth.routes.js';
 import scoringCharRoutes from './routes/scoringCharacteristic.routes.js';
 import prefScoresRoutes from './routes/preferredScoring.routes.js';
 import productRoutes from './routes/product.routes.js';
+import sizeRoutes from './routes/size.routes.js';
 
 // Initialization
 const app = express();
@@ -48,6 +49,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/preferredScoring', prefScoresRoutes);
 app.use('/api/scoringCharacteristics', scoringCharRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/sizes', sizeRoutes);
 
 export {
   app

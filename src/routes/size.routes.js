@@ -60,3 +60,5 @@ router.delete(
   ],
   sizeCtrl.deleteSizeById
 );
+
+export default router;
