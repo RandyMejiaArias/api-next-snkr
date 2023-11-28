@@ -23,27 +23,28 @@ export const signUp = async (req, res) => {
       }
     });
     newUser.role = foundRole.map((role) => role._id);
-
-    // Saving the User Object in MongoDB
-    const savedUser = await newUser.save();
-
+    
     // Create a token
     const token = jwt.sign(
       {
-        email: savedUser.email
+        email: email
       },
       config.SECRET,
       {
         expiresIn: Number(config.TOKEN_TIMEOUT) // 24 hours
       }
     );
-
+      
     const template = getConfirmUserTemplate(token);
+      
     await sendMail('Accounts', config.MAIL_USER, email, 'Confirm your account', template);
 
+    // Saving the User Object in MongoDB
+    const savedUser = await newUser.save();
+      
     return res.status(201).json({
       message: 'User registered successfully',
-      data: token
+      data: template
     });
   } catch (error) {
     return res.status(500).json(error);
