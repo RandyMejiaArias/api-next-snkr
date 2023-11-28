@@ -20,16 +20,16 @@ router.get(
 );
 
 router.get(
+  '/confirm/:token',
+  usersCtrl.confirmUser
+);
+
+router.get(
   '/:userId',
   [
     check('userId', 'Id is not a valid MongoDb Id.').isMongoId()
   ],
   usersCtrl.getUserById
-);
-
-router.get(
-  '/confirm/:token',
-  usersCtrl.confirmUser
 );
 
 router.post(
