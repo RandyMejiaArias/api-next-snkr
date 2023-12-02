@@ -1,11 +1,11 @@
+import mongoose from 'mongoose';
 import PreferredScoring from '../models/PreferredScoring.js';
-import ScoringCharacteristic from '../models/ScoringCharacteristic.js';
 
 export const getPreferredScoringByUser = async (req, res) => {
   try {
     const referencedUser = req.userId;
 
-    const preferredScoringFound = await PreferredScoring.find({ referencedUser });
+    const preferredScoringFound = await PreferredScoring.find({ referencedUser }).populate('scoringCharacteristics.scoreCharacteristic');
 
     return res.status(200).json(preferredScoringFound);
   } catch (error) {
@@ -22,26 +22,24 @@ export const addScoreToPreferredScoring = async (req, res) => {
     const preferredScoringFound = await PreferredScoring.find({ referencedUser });
 
     for (const item of scoreItems) {
-      const [ score, scoreOnPreferredScoring ] = await Promise.all([
-        ScoringCharacteristic.find(item.scoringCharacteristic),
-        PreferredScoring.find({
-          'scoringCharacteristics': {
-            $elemMatch: {
-              scoreCharacteristic: item.scoreCharacteristic,
-              score: item.score
-            }
+      const scoreOnPreferredScoring = await PreferredScoring.findOne({
+        'scoringCharacteristics': {
+          $elemMatch: {
+            scoreCharacteristic: item.scoreCharacteristic,
+            score: item.score
           }
-        })
-      ]);
+        },
+        referencedUser
+      });
 
-      if(scoreOnPreferredScoring.length > 0)
+      if(scoreOnPreferredScoring)
         return res.status(400).json({ message: 'Error. Score has already added to preferred scores.' });
     }
 
-    if(preferredScoringFound)
+    if(preferredScoringFound.length > 0)
       await PreferredScoring.findByIdAndUpdate(preferredScoringFound, {
         $push: {
-          'scoreCharacteristic': scoreItems
+          'scoringCharacteristics': scoreItems
         }
       });
     else{
@@ -63,17 +61,9 @@ export const addScoreToPreferredScoring = async (req, res) => {
 export const changeScoreOfCharacteristicOnPreferredScoring = async (req, res) => {
   try {
     const { preferredScoringId } = req.params;
-    const { scoreCharacteristic, score } = req.body;
+    const { _id, score } = req.body;
 
-    const preferredScoringFound = await PreferredScoring.findOne({
-      id: preferredScoringId,
-      scoringCharacteristics: {
-        $elemMatch: {
-          scoreCharacteristic,
-          score
-        }
-      }
-    });
+    const preferredScoringFound = await PreferredScoring.findById(preferredScoringId)
 
     if(!preferredScoringFound)
       return res.status(404).json({ message: 'Error. Preferred score does not exists.' });
@@ -81,7 +71,7 @@ export const changeScoreOfCharacteristicOnPreferredScoring = async (req, res) =>
     const { scoringCharacteristics } = preferredScoringFound;
 
     for (const item of scoringCharacteristics) {
-      if(item.scoreCharacteristic === scoreCharacteristic)
+      if(item._id.equals(mongoose.Types.ObjectId(_id)))
         item.score = score
     }
 

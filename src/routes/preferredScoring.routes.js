@@ -26,8 +26,9 @@ router.post(
 router.put(
   '/:preferredScoringId',
   [
-      check('preferredScoringId', 'Id is not a valid MongoDb Id.').isMongoId(),
-      authJwt.verifyToken
+    check('preferredScoringId', 'Id is not a valid MongoDb Id.').isMongoId(),
+    authJwt.verifyToken,
+    authJwt.isVerifiedUser
   ],
   prefScoreCtrl.changeScoreOfCharacteristicOnPreferredScoring
 );
