@@ -6,7 +6,7 @@ const preferredScoringModel = new Schema(
       {
         scoreCharacteristic: {
           type: Schema.Types.ObjectId,
-          ref: 'ScoringCharactesistic',
+          ref: 'ScoringCharacteristic',
           required: true
         },
         score: {
