@@ -1,11 +1,14 @@
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
 import Role from '../models/Role.js';
+import Product from '../models/Product.js';
+import Size from '../models/Size.js';
 import User from '../models/User.js';
 import ResetPasswordRequest from '../models/ResetPasswordRequest.js';
 import { sendMail } from '../utils/mailer.js';
 import { getResetPasswordTemplate } from '../mailTemplates/resetPasswordTemplate.js';
 import { getConfirmUserTemplate } from '../mailTemplates/confirmUserTemplate.js';
+import { calculateScore } from './size.controller.js';
 
 // Create a user by an Admin
 export const createUser = async (req, res) => {
@@ -272,3 +275,105 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json(error);
   }
 };
+
+export const getCollectiblesByUser = async (req, res) => {
+  try {
+    const userFound = await User.findById(req.userId);
+    if(!userFound)
+      return res.status(404).json({ message: 'Error. User not found.' });
+
+    const collectibles = userFound.collectibles;
+
+    return res.status(200).json({
+      total: collectibles.length,
+      data: collectibles
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+}
+
+export const addCollectibleToUser = async (req, res) => {
+  try {
+    const { size, product, evaluateConditions } = req.body;
+
+    const [ userFound, productFound, sizeFound ] = await Promise.all([
+      User.findById(req.userId),
+      Product.findById(product),
+      Size.findById(size)
+    ]);
+    if(!userFound)
+      return res.status(404).json({ message: 'Error. User not found.' });
+    if(!productFound)
+      return res.status(404).json({ message: 'Error. Product not found.' });
+    if(!sizeFound)
+      return res.status(404).json({ message: 'Error. Size not found.' });
+
+    const score = await calculateScore(sizeFound, productFound, req.userId, evaluateConditions);
+
+    const collectible = {
+      size,
+      product,
+      score,
+      evaluateConditions
+    };
+
+    await User.findByIdAndUpdate(req.userId, {
+      $addToSet: {
+        'collectibles': collectible
+      }
+    });
+
+    await Product.findByIdAndUpdate(product, {
+      $addToSet: {
+        'followedBy': userFound
+      }
+    })
+
+    return res.status(200).json({ message: 'Collectible has been added to User succesfully.' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+}
+
+export const removeCollectibleOfUser = async (req, res) => {
+  try {
+    const { size, product } = req.body;
+
+    const [ userFound, productFound, sizeFound ] = await Promise.all([
+      User.findById(req.userId),
+      Product.findById(product),
+      Size.findById(size)
+    ]);
+    if(!userFound)
+      return res.status(404).json({ message: 'Error. User not found.' });
+    if(!productFound)
+      return res.status(404).json({ message: 'Error. Product not found.' });
+    if(!sizeFound)
+      return res.status(404).json({ message: 'Error. Size not found.' });
+
+    const collectible = {
+      product,
+      size
+    };
+
+    await User.findByIdAndUpdate(req.userId, {
+      $pull: {
+        'collectibles': collectible
+      }
+    });
+
+    await Product.findByIdAndUpdate(product, {
+      $pull: {
+        'followedBy': userFound
+      }
+    });
+
+    return res.status(200).json({ message: 'Collectible has been removed to User succesfully.' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+}

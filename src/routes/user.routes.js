@@ -20,6 +20,15 @@ router.get(
 );
 
 router.get(
+  '/me/collectibles',
+  [
+    authJwt.verifyToken,
+    authJwt.isVerifiedUser
+  ],
+  usersCtrl.getCollectiblesByUser
+)
+
+router.get(
   '/confirm/:token',
   usersCtrl.confirmUser
 );
@@ -108,6 +117,24 @@ router.put(
     authJwt.isVerifiedUser
   ],
   usersCtrl.resetPassword
+);
+
+router.put(
+  '/me/collectibles',
+  [
+    authJwt.verifyToken,
+    authJwt.isVerifiedUser
+  ],
+  usersCtrl.addCollectibleToUser
+);
+
+router.delete(
+  '/me/collectibles',
+  [
+    authJwt.verifyToken,
+    authJwt.isVerifiedUser
+  ],
+  usersCtrl.removeCollectibleOfUser
 );
 
 export default router;
