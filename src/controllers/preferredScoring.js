@@ -5,7 +5,7 @@ export const getPreferredScoringByUser = async (req, res) => {
   try {
     const referencedUser = req.userId;
 
-    const preferredScoringFound = await PreferredScoring.find({ referencedUser }).populate('scoringCharacteristics.scoreCharacteristic');
+    const preferredScoringFound = await PreferredScoring.findOne({ referencedUser }).populate('scoringCharacteristics.scoreCharacteristic');
 
     return res.status(200).json(preferredScoringFound);
   } catch (error) {
@@ -77,7 +77,7 @@ export const changeScoreOfCharacteristicOnPreferredScoring = async (req, res) =>
 
     await PreferredScoring.findByIdAndUpdate(preferredScoringId, { scoringCharacteristics });
 
-    return res.status(200).json({ message: 'Score on preferred scorng updated successfully.' });
+    return res.status(200).json({ message: 'Score on preferred scoring updated successfully.' });
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);    
