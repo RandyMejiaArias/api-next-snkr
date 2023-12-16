@@ -60,7 +60,13 @@ const productSchema = new Schema(
       endpoint: {
         type: String
       }
-    }
+    },
+    followedBy: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ]
   },
   {
     versionKey: false,

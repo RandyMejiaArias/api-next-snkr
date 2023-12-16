@@ -34,7 +34,8 @@ const userSchema = new Schema(
     collectibles: [
       {
         size: {
-          type: String,
+          type: Schema.Types.ObjectId,
+          ref: 'Size',
           required: true
         },
         product: {
@@ -44,7 +45,19 @@ const userSchema = new Schema(
         },
         score: {
           type: Number
-        }
+        },
+        evaluateConditions: [
+          {
+            scoreCharacteristic: {
+              type: Schema.Types.ObjectId,
+              ref: 'ScoringCharacteristic',
+              required: true
+            },
+            value: {
+              type: Schema.Types.Boolean
+            }
+          }
+        ]
       }
     ]
   },
