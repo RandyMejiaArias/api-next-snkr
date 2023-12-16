@@ -2,6 +2,8 @@ import Size from '../models/Size.js';
 import Product from '../models/Product.js';
 import { getGoatPrices } from './goatController.js';
 import { searchOnStockxWithSKU } from './stockXController.js';
+import PreferredScoring from '../models/PreferredScoring.js';
+import mongoose from 'mongoose';
 
 export const getSizesByProduct = async (req, res) => {
   try {
@@ -25,7 +27,6 @@ export const getSizesByProduct = async (req, res) => {
     if(productFound.lastRevisionDate === undefined || productFound.lastRevisionDate < dateToCompare || total === 0) {
       const goatResults = await getGoatPrices(productFound.goat.id);
       const { variants } = await searchOnStockxWithSKU(productFound.sku);
-
       goatResults.forEach(goatSize => {
         variants.forEach(stockXSize => {
           if(stockXSize.sizeChart.baseSize.replace(/[^\d.]/g, '') === goatSize.sizeOption.presentation && goatSize.shoeCondition === 'new_no_defects' && goatSize.boxCondition === 'good_condition')
@@ -36,8 +37,8 @@ export const getSizesByProduct = async (req, res) => {
       for (const size of sizes) {
         const newSize = new Size({
           number: size.sizeChart.baseSize,
-          stockXPrice: size.market.bidAskData.lowestAsk.toFixed(2),
-          goatPrice: (size.lowestPriceCents.amount / 100).toFixed(2),
+          stockXPrice: size.market.bidAskData.lowestAsk ? size.market.bidAskData.lowestAsk.toFixed(2) : null,
+          goatPrice: (size.lowestPriceCents.amount / 100) ? (size.lowestPriceCents.amount / 100).toFixed(2) : null,
           referencedProduct: productId
         })
 
@@ -156,4 +157,30 @@ export const deleteSizeById = async (req, res) => {
     console.log(error);
     return res.status(500).json(error);
   }
+}
+
+export const calculateScore = async (size, product, userId, evaluateConditions) => {
+  const { goatPrice, stockXPrice } = size;
+  const { retailPrice } = product;
+
+  const { scoringCharacteristics } = await PreferredScoring.findOne({ referencedUser: userId }).populate('scoringCharacteristics.scoreCharacteristic');
+
+  const isOnRetail = goatPrice === retailPrice || stockXPrice === retailPrice;
+  const isUnderRetail = goatPrice < retailPrice || stockXPrice < retailPrice;
+
+  let currentScore = 0;
+  for (const condition of evaluateConditions) {
+    if(condition.value) {
+      const scoreCharacteristicFound = scoringCharacteristics.find(e => e.scoreCharacteristic._id.equals(mongoose.Types.ObjectId(condition.scoreCharacteristic)))
+      const { scoreCharacteristic, score } = scoreCharacteristicFound;
+      if(scoreCharacteristic.name === 'Is on retail') 
+        currentScore += isOnRetail ? score : 0 
+      else if(scoreCharacteristic.name === 'Is under retail') 
+        currentScore += isUnderRetail ? score : 0 
+      else 
+        currentScore += score
+    }
+  }
+
+  return currentScore;
 }
