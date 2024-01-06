@@ -278,7 +278,7 @@ export const resetPassword = async (req, res) => {
 
 export const getCollectiblesByUser = async (req, res) => {
   try {
-    const userFound = await User.findById(req.userId);
+    const userFound = await User.findById(req.userId).populate('collectibles.size').populate('collectibles.product').populate('collectibles.evaluateConditions');
     if(!userFound)
       return res.status(404).json({ message: 'Error. User not found.' });
 
@@ -367,7 +367,7 @@ export const removeCollectibleOfUser = async (req, res) => {
 
     await Product.findByIdAndUpdate(product, {
       $pull: {
-        'followedBy': userFound
+        'followedBy': req.userId
       }
     });
 
