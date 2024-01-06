@@ -6,7 +6,11 @@
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-  <!-- [A deployed version can be viewed here.]() -->
+  [A deployed version can be viewed here.](https://5173-randymejiaa-webappnexts-oju29w9tsm2.ws-us107.gitpod.io/)
+
+# Videos de la defensa
+ [Defensa Proyecto] (https://udlaec.sharepoint.com/sites/Section_2867496871/Shared%20Documents/General/Recordings/Ingenieria%20Web%2001%202024-20240106_153323-Grabaci%C3%B3n%20de%20la%20reuni%C3%B3n.mp4)
+ [Defensa Challenge] (https://udlaec.sharepoint.com/sites/Section_2867496871/Shared%20Documents/General/Recordings/Ingenieria%20Web%2001%202024-20240106_163903-Grabaci%C3%B3n%20de%20la%20reuni%C3%B3n.mp4)
   
 ---
 ## Contenido
