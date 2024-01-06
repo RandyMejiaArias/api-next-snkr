@@ -128,8 +128,8 @@ router.put(
   usersCtrl.addCollectibleToUser
 );
 
-router.delete(
-  '/me/collectibles',
+router.put(
+  '/me/removeCollectibles',
   [
     authJwt.verifyToken,
     authJwt.isVerifiedUser
