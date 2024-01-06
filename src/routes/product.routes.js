@@ -11,6 +11,11 @@ router.get(
 );
 
 router.get(
+  '/report/countByModel',
+  productCtrl.getUsersByProductModel
+);
+
+router.get(
   '/search',
   productCtrl.searchProducts
 );

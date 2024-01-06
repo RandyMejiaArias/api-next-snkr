@@ -45,6 +45,12 @@ Rutas, las cuales van a recibir las peticiones y transmitirlas al controlador co
 Controladores, funciones que van a realizar procesos específicos, se encargaran de enviar y recibir los datos a los modelos y a su vez a las vistas.<br>
 Vistas, es donde se mostrarán los datos y será la interfaz que visualize el usuario. 
 
+### Modelado
+
+El sistema tendrá la siguiente estructura:
+
+![Modelado](https://res.cloudinary.com/randymejiaarias/image/upload/v1704577464/ixxgs4rnqhwffkxwdxbf.jpg)
+
 ---
 
 <!-- ### Historia de usuario - ¿Por qué se realiza el proyecto?

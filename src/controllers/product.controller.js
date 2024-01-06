@@ -153,3 +153,32 @@ export const deleteProductById = async (req, res) => {
     return res.status(500).json(error);
   }
 }
+
+export const getUsersByProductModel = async (req, res) => {
+  try {
+    const resultado = await Product.aggregate([
+      {
+        $unwind: "$followedBy"
+      },
+      {
+          $group: {
+              _id: {
+                  model: "$model",
+                  followedBy: "$followedBy"
+              }
+          }
+      },
+      {
+          $group: {
+              _id: "$_id.model",
+              totalUsers: { $sum: 1 } // Suma 1 por cada usuario único por modelo
+          }
+      }
+    ]);
+
+  return res.status(200).json({ data: resultado });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error)
+  }
+}
